@@ -8,11 +8,9 @@
   <link rel="stylesheet" href="/vendor/ionic/css/ionic.css" />
 
   <link rel="stylesheet" href="/vendor/topcoat/css/topcoat-mobile-light.css" />
-
-
   <link rel="stylesheet" href="/stylesheets/application.css" />
 
-
+  <script src="/components/list.js/dist/list.js"></script>
   <script src="/javascripts/onerror.js"></script>
   <script src="/javascripts/console.log.js"></script>
 
@@ -22,6 +20,7 @@
   <script src="/components/steroids-js/steroids.js"></script>
 
   <script src="/vendor/googlefeedapi.js"></script>
+  <script src="/components/scrollReveal.js"></script>
 
   <script src="/components/jquery/jquery.min.js"></script>
   <script src="/vendor/hammerjs/jquery.hammer.min.js"></script>
@@ -31,7 +30,6 @@
   <script src="/controllers/application.js"></script>
   <script src="/controllers/<%= yield.controller %>.js"></script>
 </head>
-
 <body>
 
   <%= yield.view %>

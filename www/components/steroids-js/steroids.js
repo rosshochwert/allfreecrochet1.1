@@ -1,4 +1,4 @@
-/*! steroids-js - v3.1.3 - 2014-01-02 12:49 */
+/*! steroids-js - v3.1.0 - 2013-12-04 14:58 */
 (function(window){
 var Bridge,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -415,9 +415,7 @@ TizenBridge = (function(_super) {
   }
 
   TizenBridge.isUsable = function() {
-    var userAgentHasTizen;
-    userAgentHasTizen = navigator.userAgent.indexOf("Tizen") !== -1;
-    return (window.tizen != null) || userAgentHasTizen;
+    return navigator.userAgent.indexOf("Tizen") !== -1;
   };
 
   TizenBridge.prototype.sendMessageToNative = function(messageString) {
@@ -520,11 +518,6 @@ Events = (function() {
     }
     if (callbacks == null) {
       callbacks = {};
-    }
-    if (!navigator.userAgent.match(/Android/i)) {
-      steroids.markComponentReady("Events.initialVisibility");
-      steroids.markComponentReady("Events.focuslisteners");
-      return;
     }
     this.initializeVisibilityState();
     this.checkInitialVisibility();
@@ -1488,33 +1481,6 @@ TabBar = (function() {
     });
   };
 
-  TabBar.prototype.update = function(options, callbacks) {
-    var parameters, scale, _i, _ref;
-    if (options == null) {
-      options = {};
-    }
-    if (callbacks == null) {
-      callbacks = {};
-    }
-    steroids.debug("steroids.tabBar.update options: " + (JSON.stringify(options)) + " callbacks: " + (JSON.stringify(callbacks)));
-    if (options.constructor.name === "Object") {
-      parameters = {};
-      parameters.tabs = [];
-      for (scale = _i = 0, _ref = options.tabs.length; 0 <= _ref ? _i < _ref : _i > _ref; scale = 0 <= _ref ? ++_i : --_i) {
-        parameters.tabs.push({
-          title: options.tabs[scale].title,
-          image_path: options.tabs[scale].icon
-        });
-      }
-    }
-    return steroids.nativeBridge.nativeCall({
-      method: "updateTabs",
-      parameters: parameters,
-      successCallbacks: [callbacks.onSuccess],
-      failureCallbacks: [callbacks.onFailure]
-    });
-  };
-
   return TabBar;
 
 })();
@@ -2260,14 +2226,82 @@ SQLiteDB = (function() {
   return SQLiteDB;
 
 })();
+;var XHR,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+XHR = (function() {
+  XHR.prototype.headers = [];
+
+  function XHR() {
+    this.setRequestHeader = __bind(this.setRequestHeader, this);
+    this.send = __bind(this.send, this);
+    this.method = void 0;
+    this.url = void 0;
+    this.async = void 0;
+    this.status = 0;
+    this.readyState = 0;
+    this.headers = {};
+  }
+
+  XHR.prototype.open = function(methodString, urlString, isAsync) {
+    if (isAsync == null) {
+      isAsync = true;
+    }
+    this.method = methodString;
+    this.url = urlString;
+    return this.async = isAsync;
+  };
+
+  XHR.prototype.send = function(data) {
+    if (!(this.method && this.url)) {
+      throw "Error: INVALID_STATE_ERR: DOM Exception 11";
+    }
+    if (this.method !== "GET") {
+      throw "Method not implemented";
+    }
+    return this.fetch({
+      url: this.url,
+      filenameWithPath: "temp",
+      headers: this.headers
+    });
+  };
+
+  XHR.prototype.setRequestHeader = function(name, value) {
+    return this.headers[name] = value;
+  };
+
+  XHR.prototype.fetch = function(options, callbacks) {
+    var destinationPath;
+    if (options == null) {
+      options = {};
+    }
+    if (callbacks == null) {
+      callbacks = {};
+    }
+    destinationPath = options.constructor.name === "String" ? options : options.absoluteDestinationPath;
+    return steroids.nativeBridge.nativeCall({
+      method: "downloadFile",
+      parameters: {
+        url: options.url || this.url,
+        headers: options.headers || this.headers,
+        filenameWithPath: destinationPath
+      },
+      successCallbacks: [callbacks.onSuccess],
+      failureCallbacks: [callbacks.onFailure]
+    });
+  };
+
+  return XHR;
+
+})();
 ;var Analytics;
 
 Analytics = (function() {
   function Analytics() {}
 
-  Analytics.prototype.track = function(event, callbacks) {
-    if (event == null) {
-      event = {};
+  Analytics.prototype.recordEvent = function(options, callbacks) {
+    if (options == null) {
+      options = {};
     }
     if (callbacks == null) {
       callbacks = {};
@@ -2276,7 +2310,7 @@ Analytics = (function() {
       method: "recordEvent",
       parameters: {
         type: "custom",
-        attributes: event
+        attributes: options.event
       },
       successCallbacks: [callbacks.onSuccess],
       failureCallbacks: [callbacks.onFailure]
@@ -2337,21 +2371,6 @@ Screen = (function() {
     }
     return steroids.nativeBridge.nativeCall({
       method: "takeScreenshot",
-      parameters: options,
-      successCallbacks: [callbacks.onSuccess],
-      failureCallbacks: [callbacks.onFailure]
-    });
-  };
-
-  Screen.prototype.tap = function(options, callbacks) {
-    if (options == null) {
-      options = {};
-    }
-    if (callbacks == null) {
-      callbacks = {};
-    }
-    return steroids.nativeBridge.nativeCall({
-      method: "sendTouchEvent",
       parameters: options,
       successCallbacks: [callbacks.onSuccess],
       failureCallbacks: [callbacks.onFailure]
@@ -2526,8 +2545,9 @@ PostMessage = (function() {
 
 }).call(this);
 ;window.steroids = {
-  version: "3.1.3",
+  version: "3.1.0",
   Animation: Animation,
+  XHR: XHR,
   File: File,
   views: {
     WebView: WebView,

@@ -3733,6 +3733,10 @@ a.item {
   a.item:hover, a.item:focus {
     text-decoration: none; }
 
+.cardh2{
+    white-space: normal !important;
+    word-wrap: break-word !important;
+}
 /**
  * Complex Items
  * --------------------------------------------------
@@ -4202,6 +4206,9 @@ button.item-button-right:after {
   border-radius: 2px;
   background-color: white; }
 
+.cardRoss{
+  overflow: normal !important;
+}
 .card {
   padding-top: 1px;
   padding-bottom: 1px;

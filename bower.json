@@ -12,6 +12,6 @@
     "tests"
   ],
   "dependencies": {
-    "steroids-js": "3.1.x"
+    "steroids-js": "3.1.0"
   }
 }
